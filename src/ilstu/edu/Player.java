@@ -51,14 +51,19 @@ public class Player {
         }
     }
 
+    public String getName() {
+        return this.name;
+    }
+
     /** Private Methods */
     /**
      * Selects which card to pick and draws it into the player's hand
      * @return true if the player has won, false if the player has not won
      */
     private boolean chooseCardPileAndDraw() {
-        if (Game.getDiscardPile() == null)
+        if (Game.getDiscardPile().size() == 0) {
             return drawCard(Game.getDrawPile());
+        }
         else {
             Card topCardOfDiscardPile = Game.getDiscardPile().peek();
             if (doesNewCardWinGame(topCardOfDiscardPile) == true)
@@ -75,7 +80,24 @@ public class Player {
     private boolean drawCard(Stack<Card> cardPile) {
         Card newCard = cardPile.pop();
         handOfCards.add(newCard);
-        return doesNewCardWinGame(newCard);
+        return doesHandOfCardsWinGame();
+    }
+
+    private boolean doesHandOfCardsWinGame() {
+        // creates a temporary hand of five cards including the new card
+        LinkedList<Card> copyOfHandOfCards = new LinkedList<Card>();
+        for (Card card : handOfCards) {
+            copyOfHandOfCards.add(new Card(card.getValue(), card.getSuit()));
+        }
+        // calculates the total of the four highest cards
+        int total = calculateTotalOfFourHighestCards(copyOfHandOfCards);
+        // checks win conditions with the new card accounted for
+        if (total >= 20)
+            return true;
+        if (hasFourOfOneSuit(copyOfHandOfCards))
+            return true;
+        else
+            return false;
     }
 
     /**
@@ -85,17 +107,17 @@ public class Player {
      */
     private boolean doesNewCardWinGame(Card newCard) {
         // creates a temporary hand of five cards including the new card
-        LinkedList<Card> fiveCards = new LinkedList<>();
-        fiveCards.add(newCard);
+        LinkedList<Card> copyOfHandOfCards = new LinkedList<Card>();
         for (Card card : handOfCards) {
-            fiveCards.add(card);
+            copyOfHandOfCards.add(new Card(card.getValue(), card.getSuit()));
         }
+        copyOfHandOfCards.add(new Card(newCard.getValue(), newCard.getSuit()));
         // calculates the total of the four highest cards
-        int total = calculateTotalOfFourHighestCards(fiveCards);
+        int total = calculateTotalOfFourHighestCards(copyOfHandOfCards);
         // checks win conditions with the new card accounted for
-        if (total >= 20)
+        if (total >= 30)
             return true;
-        if (hasFourOfOneSuit(fiveCards))
+        if (hasFourOfOneSuit(copyOfHandOfCards))
             return true;
         else
             return false;
@@ -103,15 +125,15 @@ public class Player {
 
     /**
      * Calculates the summation of all values for five cards
-     * @param fiveCards The five cards whose values should be added
+     * @param cards The five cards whose values should be added
      * @return The total value of all five cards
      */
-    private int calculateTotalOfFourHighestCards(LinkedList<Card> fiveCards) {
+    private int calculateTotalOfFourHighestCards(LinkedList<Card> cards) {
         int totalOfFive = 0;
-        for (Card card : fiveCards) {
+        for (Card card : cards) {
             totalOfFive += card.getValue();
         }
-        int totalOfFourHighestCards = totalOfFive - getLowestValueCard(fiveCards).getValue();
+        int totalOfFourHighestCards = totalOfFive - getLowestValueCard(cards).getValue();
         return totalOfFourHighestCards;
     }
 
@@ -162,6 +184,8 @@ public class Player {
         String mostCommonSuit = mostCommonSuit(handOfCards);
         for (Card card : handOfCards) {
             if ( ! card.getSuit().equalsIgnoreCase(mostCommonSuit) ) {
+                Card cardToBeDiscarded = card;
+                handOfCards.remove(card);
                 Game.getDiscardPile().push(card);
                 break;
             }
@@ -182,17 +206,17 @@ public class Player {
             if (card.getSuit().equalsIgnoreCase("hearts"))
                 numOfHearts.setValue(numOfHearts.getValue() + 1);
             if (card.getSuit().equalsIgnoreCase("spades"))
-                numOfSpades.setValue(numOfHearts.getValue() + 1);
+                numOfSpades.setValue(numOfSpades.getValue() + 1);
             if (card.getSuit().equalsIgnoreCase("clubs"))
-                numOfClubs.setValue(numOfHearts.getValue() + 1);
+                numOfClubs.setValue(numOfClubs.getValue() + 1);
             if (card.getSuit().equalsIgnoreCase("diamonds"))
-                numOfDiamonds.setValue(numOfHearts.getValue() + 1);
+                numOfDiamonds.setValue(numOfDiamonds.getValue() + 1);
         }
         Card [] numOfCardsPerSuit = {numOfHearts, numOfSpades, numOfClubs, numOfDiamonds};
         Card mostCommonSuit = numOfCardsPerSuit[0];
-        for (Card card : numOfCardsPerSuit) {
-            if (card.getValue() > mostCommonSuit.getValue())
-                mostCommonSuit = card;
+        for (Card suit : numOfCardsPerSuit) {
+            if (suit.getValue() > mostCommonSuit.getValue())
+                mostCommonSuit = suit;
         }
         return mostCommonSuit.getSuit();
     }

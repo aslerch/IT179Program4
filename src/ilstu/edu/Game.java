@@ -2,6 +2,8 @@ package ilstu.edu;
 
 import java.util.*;
 
+import static ilstu.edu.Main.stars;
+
 /** A class that represents a card game */
 public class Game {
 
@@ -24,7 +26,7 @@ public class Game {
     public Game(LinkedList<String> players) {
         shuffle();
          for (int i = 0; i < players.size(); i++) {
-            this.playerPool.add(new Player(players.getFirst()));
+            this.playerPool.add(new Player(players.get(i)));
         }
     }
 
@@ -35,6 +37,18 @@ public class Game {
      */
     public static Card drawCard() {
         return drawPile.pop();
+    }
+
+    public Player playGame() {
+        Player playerWhoWon = null;
+        while (playerWhoWon == null) {
+            Player currentPlayer = playerPool.poll();
+            if (currentPlayer.takeTurn()) // true if the player has won
+                playerWhoWon = currentPlayer;
+            playerPool.offer(currentPlayer);
+            stars();
+        }
+        return playerWhoWon;
     }
 
     /** Private Methods */

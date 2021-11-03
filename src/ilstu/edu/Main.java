@@ -8,12 +8,20 @@ public class Main {
 
     private static Scanner keyboard = new Scanner(System.in);
     private static final int START = 1, MIN_NUM_OF_PLAYERS = 2, MAX_NUM_OF_PLAYERS = 5;
+    /**
+     * Used as a visual delineator between sections/player turns
+     */
+    public static void stars() {
+        System.out.println("*****************************************");
+    }
 
     public static void main(String [] args) {
 
         startScreen();
         LinkedList<String> players = getPlayersFromUser();
-
+        Game game = new Game(players);
+        Player playerWhoWon = game.playGame();
+        System.out.println(playerWhoWon.getName());
     }
 
     /** private methods */
@@ -51,13 +59,6 @@ public class Main {
                 *****************************************
                 Welcome to the card game
                 Please enter 1 to start""");
-    }
-
-    /**
-     * Used as a visual delineator between sections/player turns
-     */
-    private static void stars() {
-        System.out.println("*****************************************");
     }
 
     /**
