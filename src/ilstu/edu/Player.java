@@ -33,8 +33,10 @@ public class Player {
         boolean hasPlayerWon = chooseCardPileAndDraw();
         // displays card just drawn
         System.out.println("\nCard Added:\n" + handOfCards.getLast().toString());
-        if (hasPlayerWon == true)
+        if (hasPlayerWon == true) {
+            discardCard();
             return true;
+        }
         else { // player has not won and must discard a card
             discardCard();
             return false;
@@ -87,6 +89,10 @@ public class Player {
         return doesHandOfCardsWinGame();
     }
 
+    /**
+     * checks to see if the hand of cards would win the game
+     * @return true if the hand would allow the player to win, false otherwise
+     */
     private boolean doesHandOfCardsWinGame() {
         // creates a temporary hand of five cards including the new card
         LinkedList<Card> copyOfHandOfCards = new LinkedList<Card>();
@@ -185,9 +191,17 @@ public class Player {
      * removes a card from the player's hand and pushes it to the discard pile
      */
     private void discardCard() {
+        // finds the most common suit in the player's hand
         String mostCommonSuit = mostCommonSuit(handOfCards);
+        // gets a copy of the lowest value card in the hand
+        LinkedList<Card> copyOfHandOfCards = new LinkedList<Card>();
         for (Card card : handOfCards) {
-            if ( ! card.getSuit().equalsIgnoreCase(mostCommonSuit) ) {
+            copyOfHandOfCards.add(new Card(card.getValue(), card.getSuit()));
+        }
+        Card copyOfLowestValueCardInHand = getLowestValueCard(copyOfHandOfCards);
+        // cycles through the player's hand of cards and finds the lowest value card that does not belong to the most common suit
+        for (Card card : handOfCards) {
+            if ( ! card.getSuit().equalsIgnoreCase(mostCommonSuit) && card.getValue() == copyOfLowestValueCardInHand.getValue()) {
                 Card cardToBeDiscarded = card;
                 handOfCards.remove(card);
                 Game.getDiscardPile().push(card);
