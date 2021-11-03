@@ -21,7 +21,7 @@ public class Main {
         LinkedList<String> players = getPlayersFromUser();
         Game game = new Game(players);
         Player playerWhoWon = game.playGame();
-        System.out.println(playerWhoWon.getName());
+        System.out.println("Congratulations! " + playerWhoWon.getName() + " won the game!");
     }
 
     /** private methods */

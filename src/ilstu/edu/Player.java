@@ -32,7 +32,7 @@ public class Player {
         displayHand();
         boolean hasPlayerWon = chooseCardPileAndDraw();
         // displays card just drawn
-        System.out.println("Card Added:\n" + handOfCards.getLast().toString());
+        System.out.println("\nCard Added:\n" + handOfCards.getLast().toString());
         if (hasPlayerWon == true)
             return true;
         else { // player has not won and must discard a card
@@ -51,6 +51,10 @@ public class Player {
         }
     }
 
+    /**
+     * gets the name of the player
+     * @return name of the player
+     */
     public String getName() {
         return this.name;
     }

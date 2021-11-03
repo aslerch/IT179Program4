@@ -39,12 +39,24 @@ public class Game {
         return drawPile.pop();
     }
 
+    /**
+     * simulates the game
+     * @return player who won
+     */
     public Player playGame() {
         Player playerWhoWon = null;
         while (playerWhoWon == null) {
             Player currentPlayer = playerPool.poll();
+            System.out.println(currentPlayer.getName() + "'s turn");
+            if (discardPile.isEmpty())
+                System.out.println("\nDiscard Pile: Empty");
+            else
+                System.out.println("\nDiscard Pile: " + discardPile.peek());
+            System.out.println("\n" + currentPlayer.getName() + "'s current hand of cards: ");
             if (currentPlayer.takeTurn()) // true if the player has won
                 playerWhoWon = currentPlayer;
+            System.out.println("\n" + currentPlayer.getName() + "'s new hand: ");
+            currentPlayer.displayHand();
             playerPool.offer(currentPlayer);
             stars();
         }
