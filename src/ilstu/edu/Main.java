@@ -7,11 +7,21 @@ import java.util.Scanner;
 public class Main {
 
     private static Scanner keyboard = new Scanner(System.in);
+    private static final int START = 1, MIN_NUM_OF_PLAYERS = 2, MAX_NUM_OF_PLAYERS = 5;
 
     public static void main(String [] args) {
 
         displayStartScreen();
-        int selection = askForIntBetween(1, 1);
+        int selection = askForIntBetween(START, START);
+        stars();
+        System.out.println("How many players?");
+        int numOfPlayers = askForIntBetween(MIN_NUM_OF_PLAYERS, MAX_NUM_OF_PLAYERS);
+        stars();
+        LinkedList<String> players = new LinkedList<String>();
+        keyboard.nextLine(); // used for input stream formatting purposes
+        for (int i = 1; i <= numOfPlayers; i++) {
+            players.add(askForStringWithinLength("Please enter the name of player " + i + ": ", 30));
+        }
         stars();
 
 
@@ -49,7 +59,7 @@ public class Main {
             isInt = false;
             isBetweenNum1AndNum2 = false;
             try {
-                System.out.print("Your selection: ");
+                System.out.print("Your selection (" + num1 + " - " + num2 + "): ");
                 selection = keyboard.nextInt();
                 if (selection >= num1 & selection <= num2)
                     isBetweenNum1AndNum2 = true;
@@ -62,6 +72,26 @@ public class Main {
             }
         }
         return selection;
+    }
+
+    /**
+     * Asks for a String that is within a certain length
+     * @param informationRequestMessage The request message
+     * @param lengthUpperBound The upper bound for length
+     * @return A String within a length determined by the upper bound
+     */
+    private static String askForStringWithinLength(String informationRequestMessage, int lengthUpperBound) {
+        boolean isWithinCorrectLength = false;
+        String output = "";
+        while (isWithinCorrectLength == false) {
+            System.out.print(informationRequestMessage);
+            output = keyboard.nextLine();
+            if (output.length() <= lengthUpperBound)
+                isWithinCorrectLength = true;
+            if (output.length() > lengthUpperBound)
+                System.out.println("input not of valid length " + "(" + lengthUpperBound + ")");
+        }
+        return output;
     }
 
 }
