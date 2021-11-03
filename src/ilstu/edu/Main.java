@@ -11,9 +11,17 @@ public class Main {
 
     public static void main(String [] args) {
 
-        displayStartScreen();
-        int selection = askForIntBetween(START, START);
-        stars();
+        startScreen();
+        LinkedList<String> players = getPlayersFromUser();
+
+    }
+
+    /** private methods */
+    /**
+     * asks the user to input players information
+     * @return a linked list containing the players' names
+     */
+    private static LinkedList<String> getPlayersFromUser() {
         System.out.println("How many players?");
         int numOfPlayers = askForIntBetween(MIN_NUM_OF_PLAYERS, MAX_NUM_OF_PLAYERS);
         stars();
@@ -23,11 +31,18 @@ public class Main {
             players.add(askForStringWithinLength("Please enter the name of player " + i + ": ", 30));
         }
         stars();
-
-
+        return players;
     }
 
-    /** private methods */
+    /**
+     * displays the start screen and asks the user for a starting input
+     */
+    private static void startScreen() {
+        displayStartScreen();
+        int selection = askForIntBetween(START, START);
+        stars();
+    }
+
     /**
      * Displays the welcome/start screen
      */
