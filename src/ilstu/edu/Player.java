@@ -1,7 +1,9 @@
 package ilstu.edu;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.Stack;
 
 /** A class that represents a player in a game */
 public class Player {
@@ -18,15 +20,26 @@ public class Player {
     public Player(String name) {
         this.name = name;
         for (int i = 1; i <= 4; i++)
-            drawCard();
+            drawCard(Game.getDrawPile());
     }
 
-    /** Methods */
+    /** Public Methods */
     /**
-     * Draws a card from the top of the deck
+     * The player takes a full turn and gives notice if they've won
+     * @return true if the player has won, false otherwise
      */
-    public void drawCard() {
-        handOfCards.add(Game.drawCard());
+    public boolean takeTurn() {
+        displayHand();
+        boolean hasPlayerWon = chooseCardPileAndDraw();
+        // displays card just drawn
+        System.out.println("Card Added:\n" + handOfCards.getLast().toString());
+        if (hasPlayerWon == true)
+            return true;
+        else { // player has not won and must discard a card
+            discardCard();
+            return false;
+        }
+
     }
 
     /**
@@ -38,8 +51,31 @@ public class Player {
         }
     }
 
-    public String chooseCardPile() {
+    /** Private Methods */
+    /**
+     * Selects which card to pick and draws it into the player's hand
+     * @return true if the player has won, false if the player has not won
+     */
+    private boolean chooseCardPileAndDraw() {
+        if (Game.getDiscardPile() == null)
+            return drawCard(Game.getDrawPile());
+        else {
+            Card topCardOfDiscardPile = Game.getDiscardPile().peek();
+            if (doesNewCardWinGame(topCardOfDiscardPile) == true)
+                return drawCard(Game.getDiscardPile());
+            else
+                return drawCard(Game.getDrawPile());
+        }
+    }
 
+    /**
+     * Adds a card from the top of a stack of cards to the player's hand
+     * @param cardPile the stack of cards that should be drawn from
+     */
+    private boolean drawCard(Stack<Card> cardPile) {
+        Card newCard = cardPile.pop();
+        handOfCards.add(newCard);
+        return doesNewCardWinGame(newCard);
     }
 
     /**
@@ -56,25 +92,10 @@ public class Player {
         }
         // calculates the total of the four highest cards
         int total = calculateTotalOfFourHighestCards(fiveCards);
-        // counts how many of each suit is present in the temporary hand of five cards
-        int numOfHearts = 0;
-        int numOfSpades = 0;
-        int numOfClubs = 0;
-        int numOfDiamonds = 0;
-        for (Card card : fiveCards) {
-            if (card.getSuit().equalsIgnoreCase("hearts"))
-                numOfHearts++;
-            if (card.getSuit().equalsIgnoreCase("spades"))
-                numOfSpades++;
-            if (card.getSuit().equalsIgnoreCase("clubs"))
-                numOfClubs++;
-            if (card.getSuit().equalsIgnoreCase("diamonds"))
-                numOfDiamonds++;
-        }
         // checks win conditions with the new card accounted for
         if (total >= 20)
             return true;
-        if (numOfHearts >= 4 || numOfSpades >= 4 || numOfClubs >= 4 || numOfDiamonds >= 4)
+        if (hasFourOfOneSuit(fiveCards))
             return true;
         else
             return false;
@@ -96,16 +117,84 @@ public class Player {
 
     /**
      * Finds the lowest value card in a list of cards
-     * @param fiveCards The list of cards
+     * @param cards The list of cards
      * @return The Card object which has the lowest value
      */
-    private Card getLowestValueCard(LinkedList<Card> fiveCards) {
-        Card lowestValueCard = fiveCards.get(0);
-        for (Card card : fiveCards) {
+    private Card getLowestValueCard(LinkedList<Card> cards) {
+        Card lowestValueCard = cards.get(0);
+        for (Card card : cards) {
             if (card.getValue() < lowestValueCard.getValue())
                 lowestValueCard = card;
         }
         return lowestValueCard;
+    }
+
+    /**
+     * determines if there is at least four of one suit present in the list of cards
+     * @param cards cards to be analyzed
+     * @return true if there is at least four of any one suit, false otherwise
+     */
+    private boolean hasFourOfOneSuit(LinkedList<Card> cards) {
+        int numOfHearts = 0;
+        int numOfSpades = 0;
+        int numOfClubs = 0;
+        int numOfDiamonds = 0;
+        for (Card card : cards) {
+            if (card.getSuit().equalsIgnoreCase("hearts"))
+                numOfHearts++;
+            if (card.getSuit().equalsIgnoreCase("spades"))
+                numOfSpades++;
+            if (card.getSuit().equalsIgnoreCase("clubs"))
+                numOfClubs++;
+            if (card.getSuit().equalsIgnoreCase("diamonds"))
+                numOfDiamonds++;
+        }
+        if (numOfHearts >= 4 || numOfSpades >= 4 || numOfClubs >= 4 || numOfDiamonds >= 4)
+            return true;
+        else
+            return false;
+    }
+
+    /**
+     * removes a card from the player's hand and pushes it to the discard pile
+     */
+    private void discardCard() {
+        String mostCommonSuit = mostCommonSuit(handOfCards);
+        for (Card card : handOfCards) {
+            if ( ! card.getSuit().equalsIgnoreCase(mostCommonSuit) ) {
+                Game.getDiscardPile().push(card);
+                break;
+            }
+        }
+    }
+
+    /**
+     * finds the most common suit among a set of cards
+     * @param cards the cards to be analyzed
+     * @return the card suit that is most common
+     */
+    private String mostCommonSuit(LinkedList<Card> cards) {
+        Card numOfHearts = new Card(0, "hearts");
+        Card numOfSpades = new Card(0, "spades");;
+        Card numOfClubs = new Card(0, "clubs");;
+        Card numOfDiamonds = new Card(0, "diamonds");;
+        for (Card card : cards) {
+            if (card.getSuit().equalsIgnoreCase("hearts"))
+                numOfHearts.setValue(numOfHearts.getValue() + 1);
+            if (card.getSuit().equalsIgnoreCase("spades"))
+                numOfSpades.setValue(numOfHearts.getValue() + 1);
+            if (card.getSuit().equalsIgnoreCase("clubs"))
+                numOfClubs.setValue(numOfHearts.getValue() + 1);
+            if (card.getSuit().equalsIgnoreCase("diamonds"))
+                numOfDiamonds.setValue(numOfHearts.getValue() + 1);
+        }
+        Card [] numOfCardsPerSuit = {numOfHearts, numOfSpades, numOfClubs, numOfDiamonds};
+        Card mostCommonSuit = numOfCardsPerSuit[0];
+        for (Card card : numOfCardsPerSuit) {
+            if (card.getValue() > mostCommonSuit.getValue())
+                mostCommonSuit = card;
+        }
+        return mostCommonSuit.getSuit();
     }
 
 

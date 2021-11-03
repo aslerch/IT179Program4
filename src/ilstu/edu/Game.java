@@ -65,4 +65,19 @@ public class Game {
         return deck;
     }
 
+    /**
+     * gets the draw pile
+     * @return the draw pile
+     */
+    public static Stack<Card> getDrawPile() {
+        return drawPile;
+    }
+
+    /**
+     * gets the discard pile
+     * @return the discard pile
+     */
+    public static Stack<Card> getDiscardPile() {
+        return discardPile;
+    }
 }
