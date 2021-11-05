@@ -149,20 +149,6 @@ public class Player {
     }
 
     /**
-     * Finds the lowest value card in a list of cards
-     * @param cards The list of cards
-     * @return The Card object which has the lowest value
-     */
-    private Card getLowestValueCard(LinkedList<Card> cards) {
-        Card lowestValueCard = cards.get(0);
-        for (Card card : cards) {
-            if (card.getValue() < lowestValueCard.getValue())
-                lowestValueCard = card;
-        }
-        return lowestValueCard;
-    }
-
-    /**
      * determines if there is at least four of one suit present in the list of cards
      * @param cards cards to be analyzed
      * @return true if there is at least four of any one suit, false otherwise
@@ -192,13 +178,7 @@ public class Player {
      * removes a card from the player's hand and pushes it to the discard pile
      */
     private void discardCard() {
-        // finds the most common suit in the player's hand
         String mostCommonSuit = mostCommonSuit(handOfCards);
-        // gets a copy of the lowest value card in the hand
-        LinkedList<Card> copyOfHandOfCards = new LinkedList<Card>();
-        for (Card card : handOfCards) {
-            copyOfHandOfCards.add(new Card(card.getValue(), card.getSuit()));
-        }
         for (int i = 0; i <= 10; i++) {
             boolean flag = discardCardIfValuesAreEqualAndNotOfSameSuit(i, mostCommonSuit);
             if (flag == true)

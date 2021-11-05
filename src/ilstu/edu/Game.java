@@ -30,15 +30,6 @@ public class Game {
         }
     }
 
-    /** Public Methods */
-    /**
-     * Draws the first card of the draw pile
-     * @return A card
-     */
-    public static Card drawCard() {
-        return drawPile.pop();
-    }
-
     /**
      * simulates the game
      * @return player who won
