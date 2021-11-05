@@ -100,7 +100,7 @@ public class Player {
             copyOfHandOfCards.add(new Card(card.getValue(), card.getSuit()));
         }
         // calculates the total of the four highest cards
-        int total = calculateTotalOfFourHighestCards(copyOfHandOfCards);
+        int total = calculateTotalOfCardsWithMostCommonSuit(copyOfHandOfCards);
         // checks win conditions with the new card accounted for
         if (total >= 20)
             return true;
@@ -123,9 +123,9 @@ public class Player {
         }
         copyOfHandOfCards.add(new Card(newCard.getValue(), newCard.getSuit()));
         // calculates the total of the four highest cards
-        int total = calculateTotalOfFourHighestCards(copyOfHandOfCards);
+        int total = calculateTotalOfCardsWithMostCommonSuit(copyOfHandOfCards);
         // checks win conditions with the new card accounted for
-        if (total >= 30)
+        if (total >= 20)
             return true;
         if (hasFourOfOneSuit(copyOfHandOfCards))
             return true;
@@ -138,13 +138,14 @@ public class Player {
      * @param cards The five cards whose values should be added
      * @return The total value of all five cards
      */
-    private int calculateTotalOfFourHighestCards(LinkedList<Card> cards) {
-        int totalOfFive = 0;
+    private int calculateTotalOfCardsWithMostCommonSuit(LinkedList<Card> cards) {
+        int totalOfCardsWithMostCommonSuit = 0;
+        String mostCommonSuit = mostCommonSuit(cards);
         for (Card card : cards) {
-            totalOfFive += card.getValue();
+            if (card.getSuit().equalsIgnoreCase(mostCommonSuit))
+                totalOfCardsWithMostCommonSuit += card.getValue();
         }
-        int totalOfFourHighestCards = totalOfFive - getLowestValueCard(cards).getValue();
-        return totalOfFourHighestCards;
+        return totalOfCardsWithMostCommonSuit;
     }
 
     /**
@@ -200,12 +201,15 @@ public class Player {
         }
         Card copyOfLowestValueCardInHand = getLowestValueCard(copyOfHandOfCards);
         // cycles through the player's hand of cards and finds the lowest value card that does not belong to the most common suit
-        for (Card card : handOfCards) {
-            if ( ! card.getSuit().equalsIgnoreCase(mostCommonSuit) && card.getValue() == copyOfLowestValueCardInHand.getValue()) {
-                Card cardToBeDiscarded = card;
-                handOfCards.remove(card);
-                Game.getDiscardPile().push(card);
-                break;
+        outerLoop:
+        for (int i = 0; i <= 10; i++) {
+            for (Card card : handOfCards) {
+                if ( ! card.getSuit().equalsIgnoreCase(mostCommonSuit) && card.getValue() == i) {
+                    Card cardToBeDiscarded = card;
+                    handOfCards.remove(card);
+                    Game.getDiscardPile().push(cardToBeDiscarded);
+                    break outerLoop;
+                }
             }
         }
     }
