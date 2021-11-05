@@ -199,18 +199,10 @@ public class Player {
         for (Card card : handOfCards) {
             copyOfHandOfCards.add(new Card(card.getValue(), card.getSuit()));
         }
-        Card copyOfLowestValueCardInHand = getLowestValueCard(copyOfHandOfCards);
-        // cycles through the player's hand of cards and finds the lowest value card that does not belong to the most common suit
-        outerLoop:
         for (int i = 0; i <= 10; i++) {
-            for (Card card : handOfCards) {
-                if ( ! card.getSuit().equalsIgnoreCase(mostCommonSuit) && card.getValue() == i) {
-                    Card cardToBeDiscarded = card;
-                    handOfCards.remove(card);
-                    Game.getDiscardPile().push(cardToBeDiscarded);
-                    break outerLoop;
-                }
-            }
+            boolean flag = discardCardIfValuesAreEqualAndNotOfSameSuit(i, mostCommonSuit);
+            if (flag == true)
+                break;
         }
     }
 
@@ -241,6 +233,24 @@ public class Player {
                 mostCommonSuit = suit;
         }
         return mostCommonSuit.getSuit();
+    }
+
+    /**
+     * Cycles through the player's hand and discards a card if it is equal to the value parameter and is not of the same suit as the parameter
+     * @param value comparative value
+     * @param mostCommonSuit The most common suit in the player's hand
+     * @return true if a card was discarded, false otherwise
+     */
+    private boolean discardCardIfValuesAreEqualAndNotOfSameSuit(int value, String mostCommonSuit) {
+        for (Card card : handOfCards) {
+            if ( ! card.getSuit().equalsIgnoreCase(mostCommonSuit) && card.getValue() == value) {
+                Card cardToBeDiscarded = card;
+                handOfCards.remove(card);
+                Game.getDiscardPile().push(cardToBeDiscarded);
+                return true;
+            }
+        }
+        return false;
     }
 
 
